@@ -1,7 +1,7 @@
 # Script to generate test traffic to the application
 param(
     [Parameter(Mandatory=$false)]
-    [string]$AppUrl = "https://app-bwkinh757hlog.azurewebsites.net"
+    [string]$AppUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net"
 )
 
 Write-Host "🚀 Generating traffic to: $AppUrl" -ForegroundColor Cyan

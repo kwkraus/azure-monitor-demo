@@ -5,8 +5,8 @@ Write-Host "🚀 DEMO: Azure Monitor & Application Insights" -ForegroundColor Cy
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$baseUrl = "https://app-bwkinh757hlog.azurewebsites.net"
-$resourceGroup = "demo-monitor-rg"
+$baseUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net"
+$resourceGroup = "rg-demo-monitorca"
 
 # 1. Check application status
 Write-Host "1. 📊 Checking application status..." -ForegroundColor Yellow

@@ -4,7 +4,8 @@
   "parameters": {
     "environmentName": {
       "value": "demo-monitor"
-    },    "location": {
+    },
+    "location": {
       "value": "North Europe"
     },
     "administratorLogin": {
@@ -12,6 +13,15 @@
     },
     "administratorPassword": {
       "value": "Demo123456!"
+    },
+    "sqlEntraAdminLogin": {
+      "value": "kkraus@microsoft.com"
+    },
+    "sqlEntraAdminObjectId": {
+      "value": "2861b27d-c521-4d96-ae02-a5ea69e84c69"
+    },
+    "sqlEntraAdminTenantId": {
+      "value": "16b3c013-d300-468d-ac64-7eda0820b6d3"
     }
   }
 }

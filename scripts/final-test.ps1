@@ -1,7 +1,7 @@
 # Script completo para probar el entorno de Azure Monitor Demo
 param(
     [Parameter(Mandatory=$false)]
-    [string]$AppUrl = "https://app-bwkinh757hlog.azurewebsites.net",
+    [string]$AppUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net",
     
     [Parameter(Mandatory=$false)]
     [int]$RequestCount = 20
