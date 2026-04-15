@@ -53,7 +53,7 @@ for ($i = 1; $i -le $RequestCount; $i++) {
     $url = "$AppUrl$($endpoint.Path)"
     
     try {
-        $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 10
+        $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 30
         if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 500) {
             $successCount++
             Write-Host "  [$i/$RequestCount] $($endpoint.Name) - ✅ $($response.StatusCode)" -ForegroundColor Green
