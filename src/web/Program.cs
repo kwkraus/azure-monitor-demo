@@ -31,7 +31,7 @@ app.MapGet("/api/health", (TelemetryClient telemetry) =>
     return Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow });
 });
 
-app.MapGet("/api/products", (TelemetryClient telemetry) =>
+app.MapGet("/api/products", async (TelemetryClient telemetry) =>
 {
     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
     
@@ -62,7 +62,7 @@ app.MapGet("/api/products", (TelemetryClient telemetry) =>
     }
 });
 
-app.MapPost("/api/products", (Product product, TelemetryClient telemetry) =>
+app.MapPost("/api/products", async (Product product, TelemetryClient telemetry) =>
 {
     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
     
