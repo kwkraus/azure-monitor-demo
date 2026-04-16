@@ -107,9 +107,16 @@ La plantilla ahora configura Azure SQL con Microsoft Entra-only authentication. 
 CREATE USER [<web-app-name>] FROM EXTERNAL PROVIDER;
 ALTER ROLE db_datareader ADD MEMBER [<web-app-name>];
 ALTER ROLE db_datawriter ADD MEMBER [<web-app-name>];
+ALTER ROLE db_ddladmin ADD MEMBER [<web-app-name>];
 ```
 
 La cadena de conexión del App Service se publica con `Authentication=Active Directory Managed Identity`, por lo que no usa usuario/contraseña SQL para conectarse.
+
+5. Durante el arranque, la aplicación ejecuta las migraciones de Entity Framework Core y siembra los datos iniciales del demo si la tabla `Products` está vacía.
+
+Si la base de datos ya existe (el caso normal de este repo, porque `infra/main.json` la crea), la managed identity solo necesita permisos para aplicar cambios de esquema y leer/escribir datos. Si quieres que la aplicación también cree la base de datos en un servidor donde todavía no existe, la identidad también debe tener permisos de creación de base de datos en ese servidor.
+
+Para desarrollo local, configura `ConnectionStrings__DefaultConnection` con una cadena de conexión de Azure SQL que use `Authentication=Active Directory Default` y conéctate después de autenticarte con `az login`.
 
 #### Configurar la Aplicación
 ```powershell
