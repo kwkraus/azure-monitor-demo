@@ -1,4 +1,5 @@
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,18 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-var telemetryClient = app.Services.GetRequiredService<TelemetryClient>();
+static void TrackInMemoryDependency(TelemetryClient telemetry, string name, DateTimeOffset startTime, TimeSpan duration, bool success)
+{
+    telemetry.TrackDependency(new DependencyTelemetry
+    {
+        Type = "InMemory",
+        Name = name,
+        Target = "InMemory",
+        Timestamp = startTime,
+        Duration = duration,
+        Success = success
+    });
+}
 
 // Demo endpoints that generate different types of metrics and logs
 app.MapGet("/", () => Results.Redirect("/swagger"));
@@ -31,7 +43,7 @@ app.MapGet("/api/health", (TelemetryClient telemetry) =>
     return Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow });
 });
 
-app.MapGet("/api/products", (TelemetryClient telemetry) =>
+app.MapGet("/api/products", async (TelemetryClient telemetry) =>
 {
     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
     
@@ -48,7 +60,7 @@ app.MapGet("/api/products", (TelemetryClient telemetry) =>
         };
         
         stopwatch.Stop();
-        telemetry.TrackDependency("InMemory", "GetProducts", DateTime.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, true);
+        TrackInMemoryDependency(telemetry, "GetProducts", DateTimeOffset.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, true);
         telemetry.TrackMetric("ProductCount", products.Length);
         
         return Results.Ok(products);
@@ -56,13 +68,13 @@ app.MapGet("/api/products", (TelemetryClient telemetry) =>
     catch (Exception ex)
     {
         stopwatch.Stop();
-        telemetry.TrackDependency("InMemory", "GetProducts", DateTime.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, false);
+        TrackInMemoryDependency(telemetry, "GetProducts", DateTimeOffset.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, false);
         telemetry.TrackException(ex);
         return Results.Problem("Error retrieving products");
     }
 });
 
-app.MapPost("/api/products", (Product product, TelemetryClient telemetry) =>
+app.MapPost("/api/products", async (Product product, TelemetryClient telemetry) =>
 {
     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
     
@@ -73,7 +85,7 @@ app.MapPost("/api/products", (Product product, TelemetryClient telemetry) =>
         product.Id = Random.Shared.Next(1000, 9999);
         
         stopwatch.Stop();
-        telemetry.TrackDependency("InMemory", "CreateProduct", DateTime.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, true);
+        TrackInMemoryDependency(telemetry, "CreateProduct", DateTimeOffset.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, true);
         telemetry.TrackEvent("ProductCreated", new Dictionary<string, string> { { "ProductName", product.Name } });
         telemetry.TrackMetric("ProductCreated", 1);
         
@@ -82,7 +94,7 @@ app.MapPost("/api/products", (Product product, TelemetryClient telemetry) =>
     catch (Exception ex)
     {
         stopwatch.Stop();
-        telemetry.TrackDependency("InMemory", "CreateProduct", DateTime.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, false);
+        TrackInMemoryDependency(telemetry, "CreateProduct", DateTimeOffset.UtcNow.AddMilliseconds(-stopwatch.ElapsedMilliseconds), stopwatch.Elapsed, false);
         telemetry.TrackException(ex);
         return Results.Problem("Error creating product");
     }

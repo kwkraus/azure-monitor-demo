@@ -31,6 +31,25 @@
       "metadata": {
         "description": "SQL Server administrator password"
       }
+    },
+    "sqlEntraAdminLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "Microsoft Entra login name for the Azure SQL server administrator"
+      }
+    },
+    "sqlEntraAdminObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Microsoft Entra object ID for the Azure SQL server administrator"
+      }
+    },
+    "sqlEntraAdminTenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "metadata": {
+        "description": "Microsoft Entra tenant ID for the Azure SQL server administrator"
+      }
     }
   },
   "variables": {
@@ -130,6 +149,14 @@
       "properties": {
         "administratorLogin": "[parameters('administratorLogin')]",
         "administratorLoginPassword": "[parameters('administratorPassword')]",
+        "administrators": {
+          "administratorType": "ActiveDirectory",
+          "principalType": "User",
+          "login": "[parameters('sqlEntraAdminLogin')]",
+          "sid": "[parameters('sqlEntraAdminObjectId')]",
+          "tenantId": "[parameters('sqlEntraAdminTenantId')]",
+          "azureADOnlyAuthentication": true
+        },
         "version": "12.0",
         "publicNetworkAccess": "Enabled",
         "restrictOutboundNetworkAccess": "Disabled"
@@ -264,7 +291,7 @@
           "connectionStrings": [
             {
               "name": "DefaultConnection",
-              "connectionString": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDatabaseName'), ';User Id=', parameters('administratorLogin'), ';Password=', parameters('administratorPassword'), ';')]",
+              "connectionString": "[concat('Server=tcp:', reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName, ',1433;Database=', variables('sqlDatabaseName'), ';Authentication=Active Directory Managed Identity;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]",
               "type": "SQLAzure"
             }
           ]
@@ -308,20 +335,16 @@
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-01-01').keys[0].value)]"
             },
             {
-              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-01-01').keys[0].value)]"
-            },
-            {
-              "name": "WEBSITE_CONTENTSHARE",
-              "value": "[toLower(variables('loadTestingFunctionName'))]"
-            },
-            {
               "name": "FUNCTIONS_EXTENSION_VERSION",
               "value": "~4"
             },
             {
               "name": "FUNCTIONS_WORKER_RUNTIME",
               "value": "dotnet-isolated"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
             },
             {
               "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
@@ -382,7 +405,7 @@
         "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
       ],
       "properties": {
-        "description": "Alert when error rate exceeds 10%",
+        "description": "Alert when failed request count exceeds 10 in 5 minutes",
         "severity": 1,
         "enabled": true,
         "scopes": [
@@ -399,7 +422,7 @@
               "dimensions": [],
               "operator": "GreaterThan",
               "threshold": 10,
-              "timeAggregation": "Average",
+              "timeAggregation": "Count",
               "criterionType": "StaticThresholdCriterion"
             }
           ]
@@ -414,14 +437,14 @@
       "location": "global",
       "tags": "[variables('tags')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       ],
       "properties": {
         "description": "Alert when CPU usage exceeds 80%",
         "severity": 2,
         "enabled": true,
         "scopes": [
-          "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+          "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
         ],
         "evaluationFrequency": "PT1M",
         "windowSize": "PT5M",
@@ -467,6 +490,18 @@
     "sqlDatabaseName": {
       "type": "string",
       "value": "[variables('sqlDatabaseName')]"
+    },
+    "sqlServerFullyQualifiedDomainName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName')), '2023-05-01-preview').fullyQualifiedDomainName]"
+    },
+    "webAppManagedIdentityPrincipalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Web/sites', variables('webAppName')), '2023-01-01', 'Full').identity.principalId]"
+    },
+    "loadTestingFunctionName": {
+      "type": "string",
+      "value": "[variables('loadTestingFunctionName')]"
     }
   }
 }

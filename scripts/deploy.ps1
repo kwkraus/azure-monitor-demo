@@ -24,7 +24,7 @@ Write-Host "Deploying ARM template..."
 $deploymentResult = az deployment group create `
     --resource-group $ResourceGroupName `
     --template-file "infra\main.json" `
-    --parameters "infra\main.parameters.json" `
+    --parameters "infra\main.parameters.json" location="$Location" `
     --verbose
 
 if ($LASTEXITCODE -eq 0) {
@@ -35,11 +35,19 @@ if ($LASTEXITCODE -eq 0) {
     $webAppUrl = $outputs.properties.outputs.webAppUrl.value
     $appInsightsName = $outputs.properties.outputs.applicationInsightsName.value
     $logWorkspaceName = $outputs.properties.outputs.logAnalyticsWorkspaceName.value
+    $sqlServerName = $outputs.properties.outputs.sqlServerName.value
+    $sqlDatabaseName = $outputs.properties.outputs.sqlDatabaseName.value
+    $sqlServerFqdn = $outputs.properties.outputs.sqlServerFullyQualifiedDomainName.value
+    $webAppManagedIdentityPrincipalId = $outputs.properties.outputs.webAppManagedIdentityPrincipalId.value
+    $functionName = $outputs.properties.outputs.loadTestingFunctionName.value
     
     Write-Host "`n📊 Deployment Information:" -ForegroundColor Cyan
     Write-Host "Web App URL: $webAppUrl" -ForegroundColor Yellow
     Write-Host "Application Insights: $appInsightsName" -ForegroundColor Yellow
     Write-Host "Log Analytics Workspace: $logWorkspaceName" -ForegroundColor Yellow
+    Write-Host "SQL Server: $sqlServerName" -ForegroundColor Yellow
+    Write-Host "SQL Database: $sqlDatabaseName" -ForegroundColor Yellow
+    Write-Host "Web App Managed Identity Principal ID: $webAppManagedIdentityPrincipalId" -ForegroundColor Yellow
     
     # Build and deploy web app
     Write-Host "`n🚀 Building and deploying web application..." -ForegroundColor Cyan
@@ -68,7 +76,6 @@ if ($LASTEXITCODE -eq 0) {
     Compress-Archive -Path "bin\Release\publish\*" -DestinationPath "deploy.zip" -Force
     
     # Deploy to Azure Functions
-    $functionName = ($outputs.properties.outputs | ConvertFrom-Json | Where-Object { $_.PSObject.Properties.Name -like "*function*" }).value
     if (-not $functionName) {
         # Extract function name from ARM template variables
         $functionName = "func-load-" + (Get-Random -Minimum 100000 -Maximum 999999)
@@ -90,6 +97,13 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "3. Open Application Insights in Azure Portal to view metrics" -ForegroundColor White
     Write-Host "4. Check Azure Monitor for alerts and dashboards" -ForegroundColor White
     Write-Host "5. Load test function will automatically generate traffic every 5 minutes" -ForegroundColor White
+    Write-Host "6. Grant the web app managed identity database permissions using Microsoft Entra auth" -ForegroundColor White
+    Write-Host "" 
+    Write-Host "SQL post-deployment step:" -ForegroundColor Cyan
+    Write-Host "Connect to server $sqlServerFqdn as the Microsoft Entra SQL admin and run:" -ForegroundColor White
+    Write-Host "CREATE USER [$webAppName] FROM EXTERNAL PROVIDER;" -ForegroundColor Gray
+    Write-Host "ALTER ROLE db_datareader ADD MEMBER [$webAppName];" -ForegroundColor Gray
+    Write-Host "ALTER ROLE db_datawriter ADD MEMBER [$webAppName];" -ForegroundColor Gray
     
 } else {
     Write-Host "❌ Infrastructure deployment failed!" -ForegroundColor Red

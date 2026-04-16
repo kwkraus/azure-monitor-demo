@@ -1,7 +1,7 @@
 # Script to generate test traffic to the application
 param(
     [Parameter(Mandatory=$false)]
-    [string]$AppUrl = "https://app-bwkinh757hlog.azurewebsites.net"
+    [string]$AppUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net"
 )
 
 Write-Host "🚀 Generating traffic to: $AppUrl" -ForegroundColor Cyan
@@ -20,7 +20,7 @@ $endpoints = @(
 Write-Host "`n🔍 Checking if application is available..." -ForegroundColor Yellow
 
 try {
-    $response = Invoke-WebRequest -Uri $AppUrl -Method GET -TimeoutSec 10
+    $response = Invoke-WebRequest -Uri $AppUrl -Method GET -TimeoutSec 30
     if ($response.StatusCode -eq 200) {
         Write-Host "✅ Application available!" -ForegroundColor Green
         
@@ -32,7 +32,7 @@ try {
             $url = "$AppUrl$($endpoint.Path)"
             
             try {
-                $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 10
+                $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 30
                 Write-Host "  [$i/30] $($endpoint.Name) - Status: $($response.StatusCode)" -ForegroundColor Green
             }
             catch {

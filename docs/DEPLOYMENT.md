@@ -95,6 +95,22 @@ az deployment group create `
 
 ### 4. Post-Despliegue
 
+#### Azure SQL con Microsoft Entra ID only
+La plantilla ahora configura Azure SQL con Microsoft Entra-only authentication. Para que la aplicación web acceda a la base de datos con su managed identity:
+
+1. Asegúrate de que `sqlEntraAdminLogin`, `sqlEntraAdminObjectId` y `sqlEntraAdminTenantId` en `infra/main.parameters.json` correspondan al usuario o grupo de Microsoft Entra que administrará el servidor SQL.
+2. Despliega la infraestructura.
+3. Conéctate al SQL Database como ese administrador de Microsoft Entra.
+4. Crea un usuario contenido para la managed identity del App Service y asígnale los roles necesarios:
+
+```sql
+CREATE USER [<web-app-name>] FROM EXTERNAL PROVIDER;
+ALTER ROLE db_datareader ADD MEMBER [<web-app-name>];
+ALTER ROLE db_datawriter ADD MEMBER [<web-app-name>];
+```
+
+La cadena de conexión del App Service se publica con `Authentication=Active Directory Managed Identity`, por lo que no usa usuario/contraseña SQL para conectarse.
+
 #### Configurar la Aplicación
 ```powershell
 # Obtener información de deployment

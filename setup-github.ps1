@@ -68,5 +68,5 @@ Write-Host "`n🎉 ¡REPOSITORIO CONFIGURADO!" -ForegroundColor Green
 Write-Host "Tu proyecto está ahora en: $repoUrl" -ForegroundColor Green
 Write-Host "`n📊 URLs importantes:" -ForegroundColor Cyan
 Write-Host "- GitHub Repo: $($repoUrl.Replace('.git', ''))" -ForegroundColor White
-Write-Host "- Demo App: https://app-bwkinh757hlog.azurewebsites.net" -ForegroundColor White
+Write-Host "- Demo App: https://app-7mxh7u3uxpfy6.azurewebsites.net" -ForegroundColor White
 Write-Host "- Demo Guide: docs/DEMO-GUIDE.md" -ForegroundColor White

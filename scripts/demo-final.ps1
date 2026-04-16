@@ -5,13 +5,13 @@ Write-Host "🚀 DEMO: Azure Monitor & Application Insights" -ForegroundColor Cy
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$baseUrl = "https://app-bwkinh757hlog.azurewebsites.net"
-$resourceGroup = "demo-monitor-rg"
+$baseUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net"
+$resourceGroup = "rg-demo-monitorca"
 
 # 1. Check application status
 Write-Host "1. 📊 Checking application status..." -ForegroundColor Yellow
 try {
-    $health = Invoke-RestMethod -Uri "$baseUrl/health" -Method Get -TimeoutSec 10
+    $health = Invoke-RestMethod -Uri "$baseUrl/api/health" -Method Get -TimeoutSec 10
     Write-Host "   ✅ Application: HEALTHY" -ForegroundColor Green
     Write-Host "   ⏱️  Uptime: $([math]::Round($health.uptime, 2)) seconds" -ForegroundColor Green
     Write-Host "   💾 Memory: $([math]::Round($health.memory.heapUsed / 1MB, 2)) MB" -ForegroundColor Green
@@ -52,7 +52,7 @@ Write-Host ""
 # 4. Load test
 Write-Host "4. ⚡ Running load test..." -ForegroundColor Yellow
 try {
-    $loadResult = Invoke-RestMethod -Uri "$baseUrl/load?iterations=10000" -Method Get -TimeoutSec 20
+    $loadResult = Invoke-RestMethod -Uri "$baseUrl/api/load-test?iterations=10000" -Method Get -TimeoutSec 20
     Write-Host "   ✅ Load test completed" -ForegroundColor Green
     Write-Host "   ⏱️  Duration: $($loadResult.duration) ms" -ForegroundColor Green
     Write-Host "   🔢 Iterations: $($loadResult.iterations)" -ForegroundColor Green
@@ -65,7 +65,7 @@ Write-Host ""
 # 5. Memory test
 Write-Host "5. 💾 Running memory test..." -ForegroundColor Yellow
 try {
-    $memResult = Invoke-RestMethod -Uri "$baseUrl/memory?size=2000000" -Method Get -TimeoutSec 15
+    $memResult = Invoke-RestMethod -Uri "$baseUrl/api/memory-test?size=2000000" -Method Get -TimeoutSec 15
     Write-Host "   ✅ Memory test completed" -ForegroundColor Green
     Write-Host "   📈 Memory allocated: $([math]::Round($memResult.allocatedSize / 1MB, 2)) MB" -ForegroundColor Green
     Write-Host "   📊 Heap difference: $([math]::Round($memResult.memoryDifference.heapUsed / 1MB, 2)) MB" -ForegroundColor Green
@@ -96,7 +96,7 @@ $successCount = 0
 $totalRequests = 10
 for ($i = 1; $i -le $totalRequests; $i++) {
     try {
-        Invoke-RestMethod -Uri "$baseUrl/health" -Method Get -TimeoutSec 5 | Out-Null
+        Invoke-RestMethod -Uri "$baseUrl/api/health" -Method Get -TimeoutSec 5 | Out-Null
         $successCount++
         if ($i % 3 -eq 0) {
             Write-Host "   📊 $i/$totalRequests requests completed..." -ForegroundColor Cyan
@@ -122,11 +122,11 @@ Write-Host ""
 # 9. Useful links
 Write-Host "9. 🔗 Useful links for demo:" -ForegroundColor Yellow
 Write-Host "   🌐 Web Application: $baseUrl" -ForegroundColor Cyan
-Write-Host "   📊 Health Check: $baseUrl/health" -ForegroundColor Cyan
+Write-Host "   📊 Health Check: $baseUrl/api/health" -ForegroundColor Cyan
 Write-Host "   🛍️  Products API: $baseUrl/api/products" -ForegroundColor Cyan
-Write-Host "   🔥 Generate Error: $baseUrl/error" -ForegroundColor Cyan
-Write-Host "   ⚡ Load Test: $baseUrl/load?iterations=5000" -ForegroundColor Cyan
-Write-Host "   💾 Memory Test: $baseUrl/memory?size=1000000" -ForegroundColor Cyan
+Write-Host "   🔥 Generate Error: $baseUrl/api/simulate-error" -ForegroundColor Cyan
+Write-Host "   ⚡ Load Test: $baseUrl/api/load-test?iterations=5000" -ForegroundColor Cyan
+Write-Host "   💾 Memory Test: $baseUrl/api/memory-test?size=1000000" -ForegroundColor Cyan
 Write-Host "   🔗 Dependencies Test: $baseUrl/dependencies" -ForegroundColor Cyan
 
 Write-Host ""

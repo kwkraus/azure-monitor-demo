@@ -1,7 +1,7 @@
 # Script completo para probar el entorno de Azure Monitor Demo
 param(
     [Parameter(Mandatory=$false)]
-    [string]$AppUrl = "https://app-bwkinh757hlog.azurewebsites.net",
+    [string]$AppUrl = "https://app-7mxh7u3uxpfy6.azurewebsites.net",
     
     [Parameter(Mandatory=$false)]
     [int]$RequestCount = 20
@@ -53,7 +53,7 @@ for ($i = 1; $i -le $RequestCount; $i++) {
     $url = "$AppUrl$($endpoint.Path)"
     
     try {
-        $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 10
+        $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 30
         if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 500) {
             $successCount++
             Write-Host "  [$i/$RequestCount] $($endpoint.Name) - ✅ $($response.StatusCode)" -ForegroundColor Green

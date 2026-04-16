@@ -1,43 +1,105 @@
-# Build outputs
-bin/
-obj/
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
 out/
-build/
 dist/
+artifacts/
+publish/
 
-# Dependencies
-node_modules/
-packages/
-
-# Logs
-*.log
-logs/
-logs-extracted/
-temp-logs/
-*.zip
-
-# Azure specific
-.azure/
-*.publish
-*.publishsettings
-
-# Environment variables
-.env
-.env.local
-.env.production
-.env.staging
-
-# Visual Studio
+# .NET and Visual Studio caches
 .vs/
 .vscode/
 *.user
+*.rsuser
 *.suo
 *.userosscache
 *.sln.docstates
+*.cache
+*.lscache
+*.dbmdl
+*.opendb
+*.VC.db
+*.VC.VC.opendb
 
-# Temporary files
+# Rider / ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.idea/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+TestResults/
+BenchmarkDotNet.Artifacts/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MSBuild and generated files
+*.pidb
+*.svclog
+*.scc
 *.tmp
 *.temp
+*.bak
+*.backup
+*.log
+*.tlog
+*.lastcodeanalysissucceeded
+*.generated.cs
+Generated\ Files/
+
+# Publish and packaging outputs
+*.publish
+*.publishsettings
+*.pubxml.user
+*.zip
+app-deploy-complete.zip
+app-logs.zip
+node-deploy.zip
+simple-deploy.zip
+webapp-simple-deploy.zip
+
+# Node / frontend dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Azure local and tooling files
+.azure/
+local.settings.json
+ServiceDependencies/
+ServiceDependencies.Local.json
+
+# Environment files
+.env
+.env.*
+
+# Logs and temp directories
+logs/
+logs-extracted/
+temp-logs/
+tmp/
+temp/
 *~
 
 # OS generated files
@@ -49,13 +111,5 @@ temp-logs/
 ehthumbs.db
 Thumbs.db
 
-# Deployment packages
-*.zip
-app-deploy-complete.zip
-app-logs.zip
-node-deploy.zip
-simple-deploy.zip
-webapp-simple-deploy.zip
-
-# Sensitive information (keeping structure but removing secrets)
+# Sensitive information kept out of source control
 DEMO-CREDENTIALS.md
