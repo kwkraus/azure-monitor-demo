@@ -53,7 +53,7 @@
     }
   },
   "variables": {
-    "resourceToken": "[toLower(uniqueString(subscription().id, parameters('environmentName'), parameters('location')))]",
+    "resourceToken": "[toLower(uniqueString(resourceGroup().id, parameters('environmentName')))]",
     "tags": {
       "azd-env-name": "[parameters('environmentName')]",
       "purpose": "azure-monitor-demo"
@@ -467,6 +467,10 @@
     }
   ],
   "outputs": {
+    "webAppName": {
+      "type": "string",
+      "value": "[variables('webAppName')]"
+    },
     "webAppUrl": {
       "type": "string",
       "value": "[concat('https://', variables('webAppName'), '.azurewebsites.net')]"
