@@ -104,6 +104,8 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "CREATE USER [$webAppName] FROM EXTERNAL PROVIDER;" -ForegroundColor Gray
     Write-Host "ALTER ROLE db_datareader ADD MEMBER [$webAppName];" -ForegroundColor Gray
     Write-Host "ALTER ROLE db_datawriter ADD MEMBER [$webAppName];" -ForegroundColor Gray
+    Write-Host "ALTER ROLE db_ddladmin ADD MEMBER [$webAppName];" -ForegroundColor Gray
+    Write-Host "The web app applies EF Core migrations and seeds demo data during startup." -ForegroundColor White
     
 } else {
     Write-Host "❌ Infrastructure deployment failed!" -ForegroundColor Red

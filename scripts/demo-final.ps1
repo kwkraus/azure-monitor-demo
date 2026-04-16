@@ -26,8 +26,9 @@ Write-Host ""
 Write-Host "2. 🛍️  Testing products API..." -ForegroundColor Yellow
 try {
     $products = Invoke-RestMethod -Uri "$baseUrl/api/products" -Method Get -TimeoutSec 10
-    Write-Host "   ✅ API working: $($products.count) products available" -ForegroundColor Green
-    Write-Host "   📦 Products: $($products.data | ForEach-Object { $_.name } | Join-String -Separator ', ')" -ForegroundColor Green
+    $productList = @($products)
+    Write-Host "   ✅ API working: $($productList.Count) products available" -ForegroundColor Green
+    Write-Host "   📦 Products: $($productList | ForEach-Object { $_.Name } | Join-String -Separator ', ')" -ForegroundColor Green
 } catch {
     Write-Host "   ❌ API error: $($_.Exception.Message)" -ForegroundColor Red
 }
