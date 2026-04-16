@@ -33,6 +33,7 @@ if ($LASTEXITCODE -eq 0) {
     # Parse deployment outputs
     $outputs = $deploymentResult | ConvertFrom-Json
     $webAppUrl = $outputs.properties.outputs.webAppUrl.value
+    $webAppName = $outputs.properties.outputs.webAppName.value
     $appInsightsName = $outputs.properties.outputs.applicationInsightsName.value
     $logWorkspaceName = $outputs.properties.outputs.logAnalyticsWorkspaceName.value
     $sqlServerName = $outputs.properties.outputs.sqlServerName.value
@@ -60,7 +61,6 @@ if ($LASTEXITCODE -eq 0) {
     Compress-Archive -Path "bin\Release\publish\*" -DestinationPath "deploy.zip" -Force
     
     # Deploy to Azure App Service
-    $webAppName = $outputs.properties.outputs.webAppUrl.value.Replace("https://", "").Replace(".azurewebsites.net", "")
     az webapp deployment source config-zip --resource-group $ResourceGroupName --name $webAppName --src "deploy.zip"
     
     Set-Location "..\..\"
